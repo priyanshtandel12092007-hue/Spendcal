@@ -35,10 +35,14 @@ jobs:
         fi
         rm -rf extracted_app
 
-    - name: Generate Debug Keystore
+    - name: Generate Debug Keystores
       run: |
-        mkdir -p ~/.android
-        keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        # Generate in the exact path Gradle asked for
+        keytool -genkey -v -keystore ./debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        # Also copy it into app folder and ~/.android just in case
+        mkdir -p ~/.android app
+        cp ./debug.keystore ~/.android/debug.keystore
+        cp ./debug.keystore app/debug.keystore || true
 
     - name: Ensure Gradle Wrapper Exists
       run: |
